@@ -1,16 +1,19 @@
 import Image from 'next/image';
 import PropertyDetailClient from './PropertyDetailClient';
 import PropertyCard from '../../../components/PropertyCard';
-import { API_URL } from '../../../lib/config';
+import { SERVER_API_URL } from '../../../lib/config';
 import { formatPrice, imageFor } from '../../../lib/format';
 
 async function getDetail(id) {
-  const response = await fetch(`${API_URL}/api/properties/${id}`, { next: { revalidate: 120 } });
+  // no-store keeps property detail fresh after edits/deletes.
+  const response = await fetch(`${SERVER_API_URL}/api/properties/${id}`, { cache: 'no-store' });
   if (!response.ok) return null;
-  return response.json();
+  const result = await response.json();
+  return result.data;
 }
 
 export async function generateMetadata({ params }) {
+  // Generate SEO title/description from real property data.
   const { id } = await params;
   const detail = await getDetail(id);
   const property = detail?.property;
@@ -27,6 +30,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function PropertyPage({ params }) {
+  // Server component fetches property detail before rendering page HTML.
   const { id } = await params;
   const detail = await getDetail(id);
   if (!detail) return <section className="mx-auto max-w-4xl px-4 py-16">Property not found.</section>;
@@ -65,5 +69,6 @@ export default async function PropertyPage({ params }) {
 }
 
 function Stat({ label, value }) {
+  // Small reusable stat tile for bedrooms, bathrooms, area, and type.
   return <div className="rounded-md border border-line bg-white p-3"><p className="label">{label}</p><p className="mt-1 font-bold">{value}</p></div>;
 }

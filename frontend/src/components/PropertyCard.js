@@ -3,11 +3,12 @@ import Link from 'next/link';
 import { Bath, BedDouble, MapPin, Ruler } from 'lucide-react';
 import { formatPrice, imageFor } from '../lib/format';
 
-export default function PropertyCard({ property }) {
+export default function PropertyCard({ property, priority = false }) {
+  // One clickable card for one property in listing grids.
   return (
     <Link href={`/properties/${property.id}`} className="group block overflow-hidden rounded-md border border-line bg-white shadow-soft transition hover:-translate-y-0.5 hover:border-leaf/40">
       <div className="relative aspect-[16/10] bg-line">
-        <Image src={imageFor(property)} alt={property.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+        <Image src={imageFor(property)} alt={property.title} fill priority={priority} sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw" className="object-cover" />
         <span className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-bold uppercase text-leaf">{property.listingType}</span>
       </div>
       <div className="space-y-3 p-4">
